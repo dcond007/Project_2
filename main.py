@@ -24,6 +24,8 @@ st.markdown("<p class='short-font'>A comprehensive resource of all of the "
 hemispheres = ["Northern", "Southern"]
 fish_hemisphere = st.radio("Which hemisphere do you play on?", hemispheres, index=0)
 
+
+# API Calls & Required Widgets can be done in this function for both northern & southern hemispheres
 def fish_data():
     choice = st.checkbox("Check here to input a specific fish ID!", key=0)
     if choice:
@@ -50,6 +52,13 @@ def fish_data():
                 st.write("Fish Shadow Size in Water: ", fish["shadow"])
                 st.image(fish["image_uri"], caption=fish["catch-phrase"])
                 st.write(fish["museum-phrase"])
+
+
+# You can do the chart elements for both hemispheres in this function!
+def hemisphere_data(hemispheres):
+    return 0
+
+
 
 
 
