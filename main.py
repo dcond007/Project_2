@@ -4,13 +4,13 @@ import numpy as np
 import requests
 
 
-
 # Required Items Implemented:
 # Interactive Table
 # Map
 # Button
 # Checkbox
 # Success Box
+# An info box
 # Radio Button
 # Selectbox
 # Select-Slider
@@ -18,14 +18,19 @@ import requests
 
 #Required Items Missing:
 # 2 chart elements
-# An info box
 # 1 more widget
-#
+
 
 st.markdown("""
 <style>
 .short-font {
     font-size:30px !important;
+    color: white;
+    text-align: center;
+}
+
+.short-font-two {
+    font-size:27px !important;
     color: white;
     text-align: center;
 }
@@ -37,15 +42,13 @@ st.markdown("<p class='short-font'>A comprehensive resource of all of the "
             "fish available in Animal Crossing: New Horizons </p>", unsafe_allow_html=True)
 
 
-#st.write(fish)
-
 hemispheres = ["Northern", "Southern"]
 fish_hemisphere = st.radio("Which hemisphere do you play on?", hemispheres, index=0)
 
 
 # API Calls & Required Widgets can be done in this function for both northern & southern hemispheres
 def fish_data():
-    st.markdown("<p class='short-font'>Search Options</p>", unsafe_allow_html=True)
+    st.info("From the hemisphere, You can choose your preferred method of searching for fish below!")
 
     #Select Box options for Intermediate Users
     fishAPITest = "http://acnhapi.com/v1/fish/"
@@ -59,8 +62,8 @@ def fish_data():
         st.write(str(fishtest[option]["price"]) + " Bells 💰")
         st.write("CJ's Offer")
         st.write(str(fishtest[option]["price-cj"]) + " Bells 💰")
-        result = st.button("Additional Fish Information", help="Shows a fish's name across multiple languages, "
-                                                               "their shadow size & their museum info")
+        result = st.button("Additional Fish Information", key = 1, help="Shows a fish's name across multiple languages,"
+                                                                        "their shadow size & their museum info")
         if result:
             df = pd.DataFrame(
                 fishtest[option]["name"],
@@ -105,7 +108,7 @@ def fish_data():
                 st.write(fish["museum-phrase"])
     if (choice2):
         fish_slide = st.select_slider("Use this slider to see the all the fish the game has to offer!",
-                                      options = list(range(1, 81)), help="Each number is a specific  "
+                                      options = list(range(1, 81)), help="Each number is a specific identifier "
                                                                       "for each fish, ranging between 1 & 80")
         if(fish_slide):
             fishAPI2 = "http://acnhapi.com/v1/fish/" + str(fish_slide)
@@ -147,7 +150,6 @@ if fish_hemisphere == "Northern":
     st.map(nh, zoom=None)
     fish_data()
 else:
-    st.success("SOUTH")
     sh = pd.DataFrame(
         np.random.randn(1000, 2) / [45, 45] + [-45, 0],
         columns=['lat', 'lon']
