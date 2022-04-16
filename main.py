@@ -15,9 +15,9 @@ import requests
 # Selectbox
 # Select-Slider
 # Number Input
+# 2 chart elements
 
 #Required Items Missing:
-# 2 chart elements
 # 1 more widget
 
 
@@ -37,9 +37,15 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("<h1 style='text-align: center; color: coral;'>🐟 Animal Crossing Fishpedia! 🐟</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #E694FF;'>🐟 Animal Crossing Fishpedia! 🐟</h1>",
+            unsafe_allow_html=True)
 st.markdown("<p class='short-font'>A comprehensive resource of all of the "
             "fish available in Animal Crossing: New Horizons </p>", unsafe_allow_html=True)
+
+fishAPI3 = "http://acnhapi.com/v1/fish/45"
+fish3 = requests.get(fishAPI3).json()
+st.write(fish3)
+
 
 
 hemispheres = ["Northern", "Southern"]
@@ -47,14 +53,15 @@ fish_hemisphere = st.radio("Which hemisphere do you play on?", hemispheres, inde
 
 
 # API Calls & Required Widgets can be done in this function for both northern & southern hemispheres
-def fish_data():
-    st.info("From the hemisphere, You can choose your preferred method of searching for fish below!")
+def fish_data(hemisphere):
+    st.info("From this hemisphere, You can choose your preferred method of searching for fish below!")
 
     #Select Box options for Intermediate Users
     fishAPITest = "http://acnhapi.com/v1/fish/"
     fishtest = requests.get(fishAPITest).json()
-    option = st.selectbox("Choose a fish here!", fishtest)
+    hem_value = "month-array-" + hemisphere.lower()
 
+    option = st.selectbox("Choose a fish here!", fishtest)
     if option:
         st.write("Essential " + str(fishtest[option]["name"]["name-USen"]) + " information")
         st.image(fishtest[option]["icon_uri"])
@@ -62,6 +69,23 @@ def fish_data():
         st.write(str(fishtest[option]["price"]) + " Bells 💰")
         st.write("CJ's Offer")
         st.write(str(fishtest[option]["price-cj"]) + " Bells 💰")
+
+
+        d = {'Times of day available [0-23]': fishtest[option]["availability"]["time-array"]}
+        d2 = {'Hemisphere Availability': fishtest[option]["availability"][hem_value]}
+
+        df = pd.DataFrame(
+            data=d)
+        df2 = pd.DataFrame(
+            data=d2)
+
+        st.write("Daily Availability")
+        st.area_chart(df)
+        st.info("X-axis: Time of Day, Y-axis: Hours")
+        st.write("Year-Round Availability Jan(1) - Dec(12)")
+        st.bar_chart(df2)
+        st.info("X-axis: Months available, Y-axis: Number of Months")
+
         result = st.button("Additional Fish Information", key = 1, help="Shows a fish's name across multiple languages,"
                                                                         "their shadow size & their museum info")
         if result:
@@ -71,12 +95,16 @@ def fish_data():
 
             st.success("Enjoy your fish data!")
             st.dataframe(df)
-            st.write("Fish Shadow Size in Water: ", fishtest[option]["shadow"])
+            st.write("Fish Shadow Size in Water: ", fishtest[option]["shadow"], help="The size of the fish's shadow"
+                                                                                     ", ranging from 1-6")
+            st.write("In-game Location: ", fishtest[option]["availability"]["location"], help="The spawn locations "
+                                                                                              "for a fish")
+            st.write("Rarity: ", fishtest[option]["availability"]["rarity"], help="How often a fish will "
+                                                                                  "spawn in a location")
             st.image(fishtest[option]["image_uri"], caption=fishtest[option]["catch-phrase"])
             st.write(fishtest[option]["museum-phrase"])
 
-    if option:
-        st.write(fishtest[option]["name"]["name-USen"].capitalize())
+       # st.write(fishtest[option]["name"]["name-USen"].capitalize())
 
 
     choice2 = st.checkbox("Check here to search through all the fish in the game", key=0)
@@ -94,6 +122,23 @@ def fish_data():
             st.write(str(fish["price"]) + " Bells 💰")
             st.write("CJ's Offer")
             st.write(str(fish["price-cj"]) + " Bells 💰")
+            st.write(" ")
+
+            d = {'Times of day available [0-23]': fish["availability"]["time-array"]}
+            d2 = {'Hemisphere Availability': fish["availability"][hem_value]}
+
+            df = pd.DataFrame(
+                data=d)
+            df2 = pd.DataFrame(
+                data=d2)
+
+            st.write("Daily Availability")
+            st.area_chart(df)
+            st.info("X-axis: Time of Day, Y-axis: Hours")
+            st.write("Year-Round Availability Jan(1) - Dec(12)")
+            st.bar_chart(df2)
+            st.info("X-axis: Months available, Y-axis: Number of Months")
+
             result = st.button("Additional Fish Information", help="Shows a fish's name across multiple languages, "
                                                                    "their shadow size & their museum info")
             if result:
@@ -103,7 +148,12 @@ def fish_data():
 
                 st.success("Enjoy your fish data!")
                 st.dataframe(df)
-                st.write("Fish Shadow Size in Water: ", fish["shadow"])
+                st.write("Fish Shadow Size in Water: ", fish["shadow"], help="The size of the fish's shadow"
+                                                                                         ", ranging from 1-6")
+                st.write("In-game Location: ", fish["availability"]["location"], help="The spawn locations "
+                                                                                                  "for a fish")
+                st.write("Rarity: ", fish["availability"]["rarity"], help="How often a fish will "
+                                                                                      "spawn in a location")
                 st.image(fish["image_uri"], caption=fish["catch-phrase"])
                 st.write(fish["museum-phrase"])
     if (choice2):
@@ -120,6 +170,22 @@ def fish_data():
             st.write(str(fish2["price"]) + " Bells 💰")
             st.write("CJ's Offer")
             st.write(str(fish2["price-cj"]) + " Bells 💰")
+
+            d = {'Times of day available [0-23]': fish2["availability"]["time-array"]}
+            d2 = {'Hemisphere Availability': fish2["availability"][hem_value]}
+
+            df = pd.DataFrame(
+                data=d)
+            df2 = pd.DataFrame(
+                data=d2)
+
+            st.write("Daily Availability")
+            st.area_chart(df)
+            st.info("X-axis: Time of Day, Y-axis: Hours")
+            st.write("Year-Round Availability Jan(1) - Dec(12)")
+            st.bar_chart(df2)
+            st.info("X-axis: Months available, Y-axis: Number of Months")
+
             result = st.button("Additional Fish Information", key=0, help="Shows a fish's name across multiple "
                                                                          "languages, their shadow size & "
                                                                          "their museum info")
@@ -130,15 +196,14 @@ def fish_data():
 
                 st.success("Enjoy your fish data!")
                 st.dataframe(df)
-                st.write("Fish Shadow Size in Water: ", fish2["shadow"])
+                st.write("Fish Shadow Size in Water: ", fish2["shadow"], help="The size of the fish's shadow"
+                                                                                         ", ranging from 1-6")
+                st.write("In-game Location: ", fish2["availability"]["location"], help="The spawn locations "
+                                                                                                  "for a fish")
+                st.write("Rarity: ", fish2["availability"]["rarity"], help="How often a fish will "
+                                                                                      "spawn in a location")
                 st.image(fish2["image_uri"], caption=fish2["catch-phrase"])
                 st.write(fish2["museum-phrase"])
-
-
-
-# You can do the chart elements for both hemispheres in this function!
-def hemisphere_data(hemispheres):
-    return 0
 
 
 
@@ -148,12 +213,12 @@ if fish_hemisphere == "Northern":
         columns=['lat', 'lon']
     )
     st.map(nh, zoom=None)
-    fish_data()
+    fish_data("Northern")
 else:
     sh = pd.DataFrame(
-        np.random.randn(1000, 2) / [45, 45] + [-45, 0],
+        np.random.randn(1000, 2) / [-45, -45] + [-45, 0],
         columns=['lat', 'lon']
     )
     st.map(sh, zoom=None)
-    fish_data()
+    fish_data("Southern")
 
